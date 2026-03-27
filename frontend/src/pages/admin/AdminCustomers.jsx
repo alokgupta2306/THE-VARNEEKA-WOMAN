@@ -91,8 +91,8 @@ const AdminCustomers = () => {
               rows={3}
             />
             <button style={styles.sendAllBtn} onClick={sendAll} disabled={sendingAll}>
-              {sendingAll ? 'Sending...' : '📧 Send to All Customers'}
-            </button>
+  {sendingAll ? 'Sending...' : 'Send to All Customers'}
+</button>
           </div>
         </div>
 
@@ -132,8 +132,12 @@ const AdminCustomers = () => {
                 </div>
 
                 <button style={styles.messageBtn} onClick={() => setSelected(order)}>
-                  ✉️ Send Message
-                </button>
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{marginRight: '6px'}}>
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+    <polyline points="22,6 12,13 2,6"/>
+  </svg>
+  Send Message
+</button>
               </div>
             ))}
           </div>
