@@ -162,3 +162,21 @@ label {
   .section-title { font-size: 20px; }
   .page-container { padding: 20px 16px; }
 }
+
+@media (max-width: 768px) {
+  /* Hide desktop nav links on mobile */
+  nav > div:nth-child(2) {
+    display: none !important;
+  }
+  /* Hide logout button on mobile navbar */
+  nav > div:nth-child(3) > button:first-of-type {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Hide hamburger on desktop */
+  nav > div:nth-child(3) > button:last-child {
+    display: none !important;
+  }
+}
