@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
-import API from '../../utils/api';
+import API, { getImageUrl } from '../../utils/api';
 import toast from 'react-hot-toast';
 
 const AdminCustomers = () => {
@@ -118,9 +118,9 @@ const AdminCustomers = () => {
 
                 <div style={styles.orderInfo}>
                   <img
-                    src={`http://localhost:5000${order.product?.image}`}
-                    alt={order.product?.name}
-                    style={styles.productThumb}
+                      src={getImageUrl(order.product?.image)}
+                      alt={order.product?.name}
+                      style={styles.orderProductImg}
                   />
                   <div>
                     <p style={styles.productName}>{order.product?.name}</p>

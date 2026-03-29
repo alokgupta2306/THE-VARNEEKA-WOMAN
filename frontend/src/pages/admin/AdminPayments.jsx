@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
-import API from '../../utils/api';
+import API, { getImageUrl } from '../../utils/api';
 import toast from 'react-hot-toast';
 
 const AdminPayments = () => {

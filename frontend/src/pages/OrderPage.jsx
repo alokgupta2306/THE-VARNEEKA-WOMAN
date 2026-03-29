@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
-import API from '../utils/api';
+import API, { getImageUrl } from '../utils/api';
 import toast from 'react-hot-toast';
 
 const OrderPage = () => {
@@ -92,9 +92,9 @@ const OrderPage = () => {
           {/* Product Preview */}
           <div style={styles.productCard}>
             <img
-              src={`http://localhost:5000${product?.image}`}
-              alt={product?.name}
-              style={styles.productImg}
+              src={getImageUrl(order.product?.image)}
+              alt={order.product?.name}
+              style={styles.orderProductImg}
             />
             <div style={styles.productInfo}>
               <h3 style={styles.productName}>{product?.name}</h3>

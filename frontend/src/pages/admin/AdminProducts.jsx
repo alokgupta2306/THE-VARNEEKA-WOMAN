@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
-import API from '../../utils/api';
 import toast from 'react-hot-toast';
+import API, { getImageUrl } from '../utils/api';
 
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
@@ -227,9 +227,9 @@ const AdminProducts = () => {
               <div key={product._id} style={styles.card}>
                 <div style={styles.cardImgBox}>
                   <img
-                    src={`http://localhost:5000${product.image}`}
-                    alt={product.name}
-                    style={styles.productImg}
+                      src={getImageUrl(order.product?.image)}
+                      alt={order.product?.name}
+                      style={styles.orderProductImg}
                   />
                   {product.images?.length > 0 && (
                     <div style={styles.extraCount}>

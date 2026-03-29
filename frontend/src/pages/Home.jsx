@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import API from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import API, { getImageUrl } from '../utils/api';
 
 const Home = () => {
   const { user } = useAuth();
@@ -170,7 +170,7 @@ const Home = () => {
 
                 <div style={styles.imageWrapper} onClick={() => navigate(`/product/${product._id}`)} >
   <img
-    src={`http://localhost:5000${product.image}`}
+    src={getImageUrl(product.image)}
     alt={product.name}
     style={{ ...styles.productImg, cursor: 'pointer' }}
   />

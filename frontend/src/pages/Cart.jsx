@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import API from '../utils/api';
+import API, { getImageUrl } from '../utils/api';
 import toast from 'react-hot-toast';
 
 const Cart = () => {
@@ -51,9 +51,9 @@ const Cart = () => {
               {orders.map(order => (
                 <div key={order._id} style={styles.cartCard}>
                   <img
-                    src={`http://localhost:5000${order.product?.image}`}
+                    src={getImageUrl(order.product?.image)}
                     alt={order.product?.name}
-                    style={styles.cartImg}
+                    style={styles.orderProductImg}
                   />
                   <div style={styles.cartInfo}>
                     <h3 style={styles.cartProductName}>{order.product?.name}</h3>
