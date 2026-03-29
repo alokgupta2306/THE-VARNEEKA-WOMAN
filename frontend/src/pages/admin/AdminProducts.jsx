@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
+import API, { getImageUrl } from '../../utils/api';
 import toast from 'react-hot-toast';
-import API, { getImageUrl } from '../utils/api';
 
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
@@ -89,7 +89,6 @@ const AdminProducts = () => {
         </div>
         <div style={styles.divider} />
 
-        {/* Add Form */}
         {showForm && (
           <div style={styles.formCard}>
             <h3 style={styles.formTitle}>Add New Saree</h3>
@@ -125,7 +124,7 @@ const AdminProducts = () => {
                 </div>
               </div>
 
-              {/* Main Image Upload */}
+              {/* Main Image */}
               <div style={styles.imageSection}>
                 <label style={styles.imageLabel}>Main Saree Image *</label>
                 <div style={styles.uploadBox} onClick={() => document.getElementById('mainImg').click()}>
@@ -139,16 +138,10 @@ const AdminProducts = () => {
                     </div>
                   )}
                 </div>
-                <input
-                  id="mainImg"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleMainImage}
-                  style={{ display: 'none' }}
-                />
+                <input id="mainImg" type="file" accept="image/*" onChange={handleMainImage} style={{ display: 'none' }} />
               </div>
 
-              {/* Extra Images Upload */}
+              {/* Extra Images */}
               <div style={styles.imageSection}>
                 <label style={styles.imageLabel}>Additional Style Photos (Optional — max 3)</label>
                 <div style={styles.extraImagesRow}>
@@ -160,11 +153,7 @@ const AdminProducts = () => {
                       >
                         {extraPreviews[index] ? (
                           <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                            <img
-                              src={extraPreviews[index]}
-                              alt={`extra ${index + 1}`}
-                              style={styles.extraPreviewImg}
-                            />
+                            <img src={extraPreviews[index]} alt={`extra ${index + 1}`} style={styles.extraPreviewImg} />
                             <button
                               style={styles.removeBtn}
                               onClick={(e) => {
@@ -176,9 +165,7 @@ const AdminProducts = () => {
                                 setExtraPreviews(newPreviews);
                                 setExtraImages(newImages);
                               }}
-                            >
-                              ✕
-                            </button>
+                            >✕</button>
                           </div>
                         ) : (
                           <div style={styles.extraPlaceholder}>
@@ -227,9 +214,9 @@ const AdminProducts = () => {
               <div key={product._id} style={styles.card}>
                 <div style={styles.cardImgBox}>
                   <img
-                      src={getImageUrl(order.product?.image)}
-                      alt={order.product?.name}
-                      style={styles.orderProductImg}
+                    src={getImageUrl(product.image)}
+                    alt={product.name}
+                    style={styles.productImg}
                   />
                   {product.images?.length > 0 && (
                     <div style={styles.extraCount}>

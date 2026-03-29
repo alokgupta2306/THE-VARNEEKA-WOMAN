@@ -48,13 +48,13 @@ exports.addProduct = async (req, res) => {
       return res.status(400).json({ message: 'Please upload a main product image' });
     }
 
-    const image = `/uploads/${req.files['image'][0].filename}`;
+    // Cloudinary returns path as secure_url
+    const image = req.files['image'][0].path;
 
-    // Extra images (optional)
     const images = [];
     if (req.files['images']) {
       req.files['images'].forEach(file => {
-        images.push(`/uploads/${file.filename}`);
+        images.push(file.path);
       });
     }
 
@@ -86,11 +86,12 @@ exports.updateProduct = async (req, res) => {
 
     const { name, fabric, colour, pattern, price, stock } = req.body;
 
-    if (req.file) {
-      // Delete old image
-      const oldImage = path.join(__dirname, '..', product.image);
-      if (fs.existsSync(oldImage)) fs.unlinkSync(oldImage);
-      product.image = `/uploads/${req.file.filename}`;
+    if (req.files && req.files['image']) {
+      product.image = req.files['image'][0].path;
+    }
+
+    if (req.files && req.files['images']) {
+      product.images = req.files['images'].map(f => f.path);
     }
 
     product.name = name || product.name;
@@ -106,6 +107,7 @@ exports.updateProduct = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // @desc Delete product (admin only)
 // @route DELETE /api/products/:id
