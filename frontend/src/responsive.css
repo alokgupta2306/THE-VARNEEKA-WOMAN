@@ -1,0 +1,40 @@
+@media (max-width: 768px) {
+
+  /* ── Navbar ── */
+  nav {
+    padding: 10px 16px !important;
+  }
+  
+  /* Hide desktop links on mobile */
+  nav > div:nth-child(2) {
+    display: none !important;
+  }
+
+  /* ── Hero ── */
+  .hero-title {
+    font-size: 24px !important;
+    letter-spacing: 3px !important;
+  }
+
+  /* ── Login / Register ── */
+  .auth-page {
+    flex-direction: column !important;
+  }
+
+  /* ── Product Grid ── */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  /* ── Filters ── */
+  .filters {
+    flex-direction: column !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
