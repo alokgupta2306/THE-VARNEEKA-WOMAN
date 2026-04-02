@@ -30,6 +30,21 @@ h1, h2, h3 {
   font-family: 'Cinzel', serif;
 }
 
+/* ── STICKY NAVBAR — stays on top while scrolling */
+nav {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 999 !important;
+}
+
+/* ── MOBILE HERO: shrink min-height so collection shows quickly */
+@media (max-width: 768px) {
+  /* Hero becomes auto height (slim bar), not full screen */
+  div[style*="min-height"] {
+    min-height: auto !important;
+  }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

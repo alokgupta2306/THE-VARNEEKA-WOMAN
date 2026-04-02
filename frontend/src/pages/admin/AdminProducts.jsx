@@ -6,7 +6,8 @@ import toast from 'react-hot-toast';
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ name: '', fabric: 'Silk', colour: '', pattern: '', price: '', stock: '' });
+  // ── added tag: '' to initial form state
+  const [form, setForm] = useState({ name: '', fabric: 'Silk', colour: '', pattern: '', price: '', stock: '', tag: '' });
   const [mainImage, setMainImage] = useState(null);
   const [extraImages, setExtraImages] = useState([]);
   const [mainPreview, setMainPreview] = useState(null);
@@ -52,7 +53,8 @@ const AdminProducts = () => {
       });
 
       toast.success('Saree added successfully!');
-      setForm({ name: '', fabric: 'Silk', colour: '', pattern: '', price: '', stock: '' });
+      // ── reset includes tag
+      setForm({ name: '', fabric: 'Silk', colour: '', pattern: '', price: '', stock: '', tag: '' });
       setMainImage(null);
       setExtraImages([]);
       setMainPreview(null);
@@ -75,6 +77,13 @@ const AdminProducts = () => {
     } catch (err) {
       toast.error('Failed to delete');
     }
+  };
+
+  // Tag label helper
+  const tagLabel = (tag) => {
+    if (tag === 'new_arrival') return 'New Arrival';
+    if (tag === 'best_selling') return 'Best Selling';
+    return null;
   };
 
   return (
@@ -122,6 +131,17 @@ const AdminProducts = () => {
                   <label>Stock Count</label>
                   <input name="stock" value={form.stock} onChange={handleChange} placeholder="e.g. 10" type="number" required />
                 </div>
+
+                {/* ── NEW: Tag dropdown */}
+                <div style={styles.field}>
+                  <label>Tag (for Home Tabs)</label>
+                  <select name="tag" value={form.tag} onChange={handleChange} style={styles.select}>
+                    <option value="">No Tag</option>
+                    <option value="new_arrival">New Arrival</option>
+                    <option value="best_selling">Best Selling</option>
+                  </select>
+                </div>
+
               </div>
 
               {/* Main Image */}
@@ -218,7 +238,17 @@ const AdminProducts = () => {
                     alt={product.name}
                     style={styles.productImg}
                   />
-                  {product.images?.length > 0 && (
+                  {/* ── show tag badge if set */}
+                  {tagLabel(product.tag) && (
+                    <div style={{
+                      ...styles.extraCount,
+                      background: product.tag === 'new_arrival' ? 'rgba(107,27,42,0.85)' : 'rgba(201,168,76,0.95)',
+                      color: product.tag === 'new_arrival' ? '#C9A84C' : '#6B1B2A',
+                    }}>
+                      {tagLabel(product.tag)}
+                    </div>
+                  )}
+                  {product.images?.length > 0 && !product.tag && (
                     <div style={styles.extraCount}>
                       +{product.images.length} photos
                     </div>

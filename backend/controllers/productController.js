@@ -6,11 +6,12 @@ const fs = require('fs');
 // @route GET /api/products
 exports.getProducts = async (req, res) => {
   try {
-    const { fabric, colour, minPrice, maxPrice } = req.query;
+    const { fabric, colour, minPrice, maxPrice, tag } = req.query;  // ── added tag
 
     let filter = {};
     if (fabric) filter.fabric = fabric;
     if (colour) filter.colour = { $regex: colour, $options: 'i' };
+    if (tag) filter.tag = tag;  // ── NEW: filter by tag
     if (minPrice || maxPrice) {
       filter.price = {};
       if (minPrice) filter.price.$gte = Number(minPrice);
@@ -42,13 +43,12 @@ exports.getProductById = async (req, res) => {
 // @route POST /api/products
 exports.addProduct = async (req, res) => {
   try {
-    const { name, fabric, colour, pattern, price, stock } = req.body;
+    const { name, fabric, colour, pattern, price, stock, tag } = req.body;  // ── added tag
 
     if (!req.files || !req.files['image']) {
       return res.status(400).json({ message: 'Please upload a main product image' });
     }
 
-    // Cloudinary returns path as secure_url
     const image = req.files['image'][0].path;
 
     const images = [];
@@ -65,6 +65,7 @@ exports.addProduct = async (req, res) => {
       pattern,
       price: Number(price),
       stock: Number(stock),
+      tag: tag || '',   // ── NEW
       image,
       images
     });
@@ -84,7 +85,7 @@ exports.updateProduct = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    const { name, fabric, colour, pattern, price, stock } = req.body;
+    const { name, fabric, colour, pattern, price, stock, tag } = req.body;  // ── added tag
 
     if (req.files && req.files['image']) {
       product.image = req.files['image'][0].path;
@@ -100,6 +101,7 @@ exports.updateProduct = async (req, res) => {
     product.pattern = pattern || product.pattern;
     product.price = price ? Number(price) : product.price;
     product.stock = stock ? Number(stock) : product.stock;
+    product.tag = tag !== undefined ? tag : product.tag;  // ── NEW
 
     const updated = await product.save();
     res.json(updated);
@@ -107,7 +109,6 @@ exports.updateProduct = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // @desc Delete product (admin only)
 // @route DELETE /api/products/:id
@@ -118,7 +119,6 @@ exports.deleteProduct = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    // Delete image file
     const imagePath = path.join(__dirname, '..', product.image);
     if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
 

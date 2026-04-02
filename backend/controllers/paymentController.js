@@ -3,11 +3,25 @@ const crypto = require('crypto');
 const Order = require('../models/Order');
 const axios = require('axios');
 
-// Razorpay instance
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
-});
+// ── Safe Razorpay instance — won't crash if keys are dummy/missing
+let razorpay = null;
+try {
+  if (
+    process.env.RAZORPAY_KEY_ID &&
+    process.env.RAZORPAY_KEY_SECRET &&
+    !process.env.RAZORPAY_KEY_ID.includes('dummy') &&
+    !process.env.RAZORPAY_KEY_SECRET.includes('dummy')
+  ) {
+    razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET
+    });
+  } else {
+    console.log('⚠️  Razorpay: using dummy keys — payment disabled until real keys are added.');
+  }
+} catch (err) {
+  console.log('⚠️  Razorpay init failed:', err.message);
+}
 
 // Send email via Brevo HTTP API
 const sendEmail = async (to, toName, subject, htmlContent) => {
@@ -35,6 +49,10 @@ const sendEmail = async (to, toName, subject, htmlContent) => {
 // @route POST /api/payment/create-order
 exports.createPaymentOrder = async (req, res) => {
   try {
+    if (!razorpay) {
+      return res.status(503).json({ message: 'Payment gateway not configured yet. Real Razorpay keys needed.' });
+    }
+
     const { amount, orderId } = req.body;
 
     const options = {

@@ -47,6 +47,12 @@ const productSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
+  // ── NEW FIELD ── tag for New Arrival / Best Selling tabs
+  tag: {
+    type: String,
+    enum: ['', 'new_arrival', 'best_selling'],
+    default: ''
+  },
   reviews: [reviewSchema],
   rating: {
     type: Number,
