@@ -1,12 +1,42 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import API from '../utils/api';
 
 const Navbar = ({ cartCount = 0 }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+
+  const handleSearch = async (query) => {
+    setSearchQuery(query);
+    if (query.trim().length < 2) { setSearchResults([]); return; }
+    setSearching(true);
+    try {
+      const { data } = await API.get('/products', { params: {} });
+      const filtered = data.filter(p =>
+        p.name.toLowerCase().includes(query.toLowerCase())
+      );
+      setSearchResults(filtered.slice(0, 6));
+    } catch (err) {
+      setSearchResults([]);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const handleSelectResult = (product) => {
+    navigate(`/product/${product._id}`);
+    setSearchOpen(false);
+    setSearchQuery('');
+    setSearchResults([]);
+  };
 
   const scrollTo = (id) => {
     if (window.location.pathname !== '/') {
@@ -43,14 +73,14 @@ const Navbar = ({ cartCount = 0 }) => {
           <span style={styles.link} onClick={() => scrollTo('about')}>About</span>
           <span style={styles.link} onClick={() => scrollTo('contact')}>Contact Us</span>
           {user && user.role === 'admin' && (
-  <>
-    <Link to="/admin/products" style={styles.link}>Add Saree</Link>
-    <Link to="/admin/orders" style={styles.link}>Orders</Link>
-    <Link to="/admin/payments" style={styles.link}>Payments</Link>
-    <Link to="/admin/customers" style={styles.link}>Customers</Link>
-    <Link to="/admin/analytics" style={styles.link}>Analytics</Link>
-  </>
-)}
+            <>
+              <Link to="/admin/products" style={styles.link}>Add Saree</Link>
+              <Link to="/admin/orders" style={styles.link}>Orders</Link>
+              <Link to="/admin/payments" style={styles.link}>Payments</Link>
+              <Link to="/admin/customers" style={styles.link}>Customers</Link>
+              <Link to="/admin/analytics" style={styles.link}>Analytics</Link>
+            </>
+          )}
         </div>
 
         {/* Right Icons */}
@@ -73,7 +103,6 @@ const Navbar = ({ cartCount = 0 }) => {
                   <circle cx="12" cy="7" r="4"/>
                 </svg>
               </Link>
-              {/* Hide logout on mobile — available in hamburger menu */}
               <button onClick={handleLogout} style={styles.logoutBtn}>Logout</button>
             </>
           ) : (
@@ -81,6 +110,53 @@ const Navbar = ({ cartCount = 0 }) => {
               <Link to="/login" style={styles.loginBtn}>Login</Link>
               <Link to="/register" style={styles.registerBtn}>Register</Link>
             </>
+          )}
+
+          {/* Search Icon */}
+          <button
+            style={styles.searchIconBtn}
+            onClick={() => {
+              setSearchOpen(!searchOpen);
+              setSearchQuery('');
+              setSearchResults([]);
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.5">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </button>
+
+          {/* Search Dropdown */}
+          {searchOpen && (
+            <div style={styles.searchDropdown}>
+              <input
+                autoFocus
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                placeholder="Search sarees..."
+                style={styles.searchInput}
+              />
+              {searching && (
+                <p style={styles.searchStatus}>Searching...</p>
+              )}
+              {!searching && searchQuery.length >= 2 && searchResults.length === 0 && (
+                <p style={styles.searchStatus}>No sarees found</p>
+              )}
+              {searchResults.map(product => (
+                <div
+                  key={product._id}
+                  style={styles.searchResultItem}
+                  onClick={() => handleSelectResult(product)}
+                  onMouseEnter={e => e.currentTarget.style.background = '#F5ECD8'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+                >
+                  <span style={styles.searchResultName}>{product.name}</span>
+                  <span style={styles.searchResultDetail}>{product.fabric} · ₹{product.price?.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
           )}
 
           {/* Hamburger */}
@@ -217,6 +293,7 @@ const styles = {
     alignItems: 'center',
     gap: '12px',
     flexShrink: 0,
+    position: 'relative',
   },
   iconBtn: {
     color: '#C9A84C',
@@ -303,6 +380,66 @@ const styles = {
     borderBottom: '1px solid rgba(201, 168, 76, 0.15)',
     cursor: 'pointer',
     display: 'block',
+  },
+  searchIconBtn: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    padding: '4px',
+    position: 'relative',
+  },
+  searchDropdown: {
+    position: 'absolute',
+    top: '100%',
+    right: '0',
+    width: '320px',
+    background: '#fff',
+    border: '1px solid #C9A84C',
+    borderTop: 'none',
+    zIndex: 2000,
+    maxHeight: '400px',
+    overflowY: 'auto',
+    boxShadow: '0 8px 24px rgba(107,27,42,0.12)',
+  },
+  searchInput: {
+    width: '100%',
+    padding: '14px 16px',
+    border: 'none',
+    borderBottom: '1px solid #F5ECD8',
+    fontFamily: 'Raleway, sans-serif',
+    fontSize: '14px',
+    outline: 'none',
+    color: '#2C2C2C',
+  },
+  searchStatus: {
+    padding: '12px 16px',
+    fontFamily: 'Raleway, sans-serif',
+    fontSize: '13px',
+    color: '#888',
+    fontStyle: 'italic',
+  },
+  searchResultItem: {
+    padding: '12px 16px',
+    cursor: 'pointer',
+    borderBottom: '1px solid #F5ECD8',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '3px',
+    transition: 'background 0.2s',
+    background: '#fff',
+  },
+  searchResultName: {
+    fontFamily: 'Cinzel, serif',
+    fontSize: '13px',
+    color: '#6B1B2A',
+    letterSpacing: '1px',
+  },
+  searchResultDetail: {
+    fontFamily: 'Raleway, sans-serif',
+    fontSize: '11px',
+    color: '#888',
   },
   mobileLogout: {
     background: 'transparent',
