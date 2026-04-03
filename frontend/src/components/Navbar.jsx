@@ -58,9 +58,44 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
 
   return (
     <>
+      {/* CHANGE 4 — Restructured nav: hamburger left, logo center, icons right */}
       <nav style={styles.nav}>
 
-        {/* CHANGE 7 — Logo fades in only when hero is scrolled past */}
+        {/* LEFT — hamburger on mobile, desktop links on desktop */}
+        <div style={styles.leftSection}>
+          {/* Hamburger — mobile only */}
+          <button style={styles.hamburger} className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            )}
+          </button>
+          {/* Desktop Links */}
+          <div style={styles.links} className="nav-desktop-links">
+            <Link to="/" style={styles.link}>Home</Link>
+            <span style={styles.link} onClick={() => scrollTo('about')}>About</span>
+            <span style={styles.link} onClick={() => scrollTo('contact')}>Contact Us</span>
+            {user && user.role === 'admin' && (
+              <>
+                <Link to="/admin/products" style={styles.link}>Add Saree</Link>
+                <Link to="/admin/orders" style={styles.link}>Orders</Link>
+                <Link to="/admin/payments" style={styles.link}>Payments</Link>
+                <Link to="/admin/customers" style={styles.link}>Customers</Link>
+                <Link to="/admin/analytics" style={styles.link}>Analytics</Link>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* CENTER — Logo (hidden on home until scroll, always visible on other pages) */}
         <Link to="/" style={styles.logo}>
           <img
             src="/logo.svg"
@@ -84,23 +119,7 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
           </div>
         </Link>
 
-        {/* Desktop Links */}
-        <div style={styles.links}>
-          <Link to="/" style={styles.link}>Home</Link>
-          <span style={styles.link} onClick={() => scrollTo('about')}>About</span>
-          <span style={styles.link} onClick={() => scrollTo('contact')}>Contact Us</span>
-          {user && user.role === 'admin' && (
-            <>
-              <Link to="/admin/products" style={styles.link}>Add Saree</Link>
-              <Link to="/admin/orders" style={styles.link}>Orders</Link>
-              <Link to="/admin/payments" style={styles.link}>Payments</Link>
-              <Link to="/admin/customers" style={styles.link}>Customers</Link>
-              <Link to="/admin/analytics" style={styles.link}>Analytics</Link>
-            </>
-          )}
-        </div>
-
-        {/* Right Icons */}
+        {/* RIGHT — search, cart, account, login */}
         <div style={styles.icons}>
           {user ? (
             <>
@@ -120,7 +139,7 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
                   <circle cx="12" cy="7" r="4"/>
                 </svg>
               </Link>
-              <button onClick={handleLogout} style={styles.logoutBtn}>Logout</button>
+              <button onClick={handleLogout} style={styles.logoutBtn} className="nav-logout">Logout</button>
             </>
           ) : (
             <>
@@ -155,9 +174,7 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
                 placeholder="Search sarees..."
                 style={styles.searchInput}
               />
-              {searching && (
-                <p style={styles.searchStatus}>Searching...</p>
-              )}
+              {searching && <p style={styles.searchStatus}>Searching...</p>}
               {!searching && searchQuery.length >= 2 && searchResults.length === 0 && (
                 <p style={styles.searchStatus}>No sarees found</p>
               )}
@@ -175,22 +192,6 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
               ))}
             </div>
           )}
-
-          {/* Hamburger */}
-          <button style={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? (
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            ) : (
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2">
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <line x1="3" y1="12" x2="21" y2="12"/>
-                <line x1="3" y1="18" x2="21" y2="18"/>
-              </svg>
-            )}
-          </button>
         </div>
       </nav>
 
@@ -230,14 +231,14 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
         </div>
       )}
 
+      {/* CHANGE 6 — Updated media query classNames */}
       <style>{`
         @media (max-width: 768px) {
-          .desktop-links { display: none !important; }
-          .logout-desktop { display: none !important; }
-          .login-register-desktop { display: none !important; }
+          .nav-desktop-links { display: none !important; }
+          .nav-logout { display: none !important; }
         }
         @media (min-width: 769px) {
-          .hamburger-btn { display: none !important; }
+          .nav-hamburger { display: none !important; }
         }
       `}</style>
     </>
@@ -245,10 +246,11 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
 };
 
 const styles = {
+  // CHANGE 1 — Grid layout: hamburger left, logo center, icons right
   nav: {
-    display: 'flex',
+    display: 'grid',
+    gridTemplateColumns: '1fr auto 1fr',
     alignItems: 'center',
-    justifyContent: 'space-between',
     padding: '12px 24px',
     backgroundColor: '#6B1B2A',
     borderBottom: '2px solid #C9A84C',
@@ -256,12 +258,13 @@ const styles = {
     top: 0,
     zIndex: 1000,
   },
+  // CHANGE 2 — Logo centered
   logo: {
     textDecoration: 'none',
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: '10px',
-    flex: 1,
   },
   logoImg: {
     height: '40px',
@@ -289,6 +292,12 @@ const styles = {
     fontStyle: 'italic',
     letterSpacing: '1px',
   },
+  // CHANGE 5 — leftSection style
+  leftSection: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+  },
   links: {
     display: 'flex',
     gap: '24px',
@@ -305,12 +314,14 @@ const styles = {
     cursor: 'pointer',
     whiteSpace: 'nowrap',
   },
+  // CHANGE 3 — Icons right aligned
   icons: {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
     flexShrink: 0,
     position: 'relative',
+    justifyContent: 'flex-end',
   },
   iconBtn: {
     color: '#C9A84C',
