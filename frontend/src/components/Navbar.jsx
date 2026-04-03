@@ -4,7 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import API from '../utils/api';
 
-const Navbar = ({ cartCount = 0 }) => {
+// CHANGE 6 — Accept heroScrolled prop
+const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -58,10 +59,26 @@ const Navbar = ({ cartCount = 0 }) => {
   return (
     <>
       <nav style={styles.nav}>
-        {/* Logo */}
+
+        {/* CHANGE 7 — Logo fades in only when hero is scrolled past */}
         <Link to="/" style={styles.logo}>
-          <img src="/logo.svg" alt="The Varneeka Woman" style={styles.logoImg} />
-          <div style={styles.logoText}>
+          <img
+            src="/logo.svg"
+            alt="The Varneeka Woman"
+            style={{
+              ...styles.logoImg,
+              opacity: heroScrolled ? 1 : 0,
+              transform: heroScrolled ? 'translateY(0)' : 'translateY(-10px)',
+              transition: 'opacity 0.4s ease, transform 0.4s ease',
+              pointerEvents: heroScrolled ? 'auto' : 'none',
+            }}
+          />
+          <div style={{
+            ...styles.logoText,
+            opacity: heroScrolled ? 1 : 0,
+            transform: heroScrolled ? 'translateY(0)' : 'translateY(-10px)',
+            transition: 'opacity 0.4s ease, transform 0.4s ease',
+          }}>
             <span style={styles.logoName}>THE VARNEEKA WOMAN</span>
             <span style={styles.logoBy}>by Capt Aditi Samant</span>
           </div>

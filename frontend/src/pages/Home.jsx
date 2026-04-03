@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
@@ -21,20 +21,33 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ fabric: '', colour: '', minPrice: '', maxPrice: '' });
   const [cartCount, setCartCount] = useState(0);
-  // ── NEW: active tab state
-  const [activeTab, setActiveTab] = useState('all'); // 'all' | 'new_arrival' | 'best_selling'
-  // ── NEW: wishlist state (localStorage)
+  const [activeTab, setActiveTab] = useState('all');
   const [wishlist, setWishlist] = useState(() => {
     const saved = localStorage.getItem('varneekaWishlist');
     return saved ? JSON.parse(saved) : [];
   });
-  // ── NEW: happy customers slider
   const [reviewIndex, setReviewIndex] = useState(0);
   const reviewTimer = useRef(null);
+
+  // CHANGE 2 — hero scroll states
+  const [heroScrolled, setHeroScrolled] = useState(false);
+  const heroRef = useRef(null);
 
   useEffect(() => {
     fetchProducts();
     fetchCartCount();
+  }, []);
+
+  // CHANGE 3 — detect when hero is scrolled out of view
+  useEffect(() => {
+    const handleScroll = () => {
+      if (heroRef.current) {
+        const heroBottom = heroRef.current.getBoundingClientRect().bottom;
+        setHeroScrolled(heroBottom < 60);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // ── auto-slide reviews every 3 seconds
@@ -93,7 +106,6 @@ const Home = () => {
     navigate(`/order/${productId}`);
   };
 
-  // ── NEW: toggle wishlist
   const toggleWishlist = (productId) => {
     if (!user) { navigate('/login'); return; }
     const updated = wishlist.includes(productId)
@@ -104,25 +116,24 @@ const Home = () => {
     toast.success(wishlist.includes(productId) ? 'Removed from wishlist' : 'Added to wishlist!');
   };
 
-  // ── filter products by active tab
   const displayedProducts = activeTab === 'all'
     ? products
     : products.filter(p => p.tag === activeTab);
 
-  // ── star renderer
   const renderStars = (rating) => '★'.repeat(rating) + '☆'.repeat(5 - rating);
 
   return (
     <div>
-      <Navbar cartCount={cartCount} />
+      {/* CHANGE 5 — pass heroScrolled to Navbar */}
+      <Navbar cartCount={cartCount} heroScrolled={heroScrolled} />
 
       {/* ───── HERO SECTION ───── */}
-      {/* Desktop: full screen hero | Mobile: slim horizontal bar */}
-      <div style={styles.hero}>
+      {/* CHANGE 4 — attach heroRef */}
+      <div style={styles.hero} ref={heroRef}>
         <img src="/home_background.png" alt="" style={styles.heroBg} />
         <div style={styles.heroOverlay} />
 
-        {/* DESKTOP hero content (hidden on mobile) */}
+        {/* DESKTOP hero content */}
         <div style={styles.heroContent} className="hero-desktop">
           <div style={styles.logoWrapper}>
             <img src="/logo.svg" alt="The Varneeka Woman Logo" style={styles.heroLogo} />
@@ -139,8 +150,12 @@ const Home = () => {
           </button>
         </div>
 
-        {/* MOBILE hero content — slim horizontal bar */}
-        <div style={styles.heroMobile} className="hero-mobile">
+        {/* CHANGE 8 — Mobile hero slim bar with opacity on scroll */}
+        <div style={{
+          ...styles.heroMobile,
+          opacity: heroScrolled ? 0 : 1,
+          transition: 'opacity 0.4s ease',
+        }} className="hero-mobile">
           <img src="/logo.svg" alt="logo" style={styles.heroMobileLogo} />
           <div style={styles.heroMobileText}>
             <p style={styles.heroMobileTitle}>THE VARNEEKA WOMAN</p>
@@ -161,7 +176,7 @@ const Home = () => {
         <h2 className="section-title">Our Collection</h2>
         <div className="divider" />
 
-        {/* ── NEW: Tabs */}
+        {/* Tabs */}
         <div style={styles.tabsRow}>
           {[
             { key: 'all', label: 'All' },
@@ -236,14 +251,12 @@ const Home = () => {
               >
                 <div style={styles.cardCircle} />
                 <div style={styles.imageWrapper}>
-                  {/* ── NEW: tag badge */}
                   {product.tag === 'new_arrival' && (
                     <div style={styles.tagBadge}>New Arrival</div>
                   )}
                   {product.tag === 'best_selling' && (
                     <div style={{ ...styles.tagBadge, background: '#C9A84C', color: '#6B1B2A' }}>Best Selling</div>
                   )}
-                  {/* ── NEW: wishlist heart */}
                   <button
                     style={{
                       ...styles.wishlistBtn,
@@ -295,33 +308,25 @@ const Home = () => {
         )}
       </div>
 
-      {/* ───── HAPPY CUSTOMERS SECTION ───── NEW */}
+      {/* ───── HAPPY CUSTOMERS SECTION ───── */}
       <div style={styles.reviewSection}>
         <h2 className="section-title" style={{ color: '#C9A84C' }}>Happy Customers</h2>
         <div style={{ width: '80px', height: '2px', background: 'linear-gradient(to right, transparent, #C9A84C, transparent)', margin: '16px auto 32px' }} />
-
         <div style={styles.reviewSlider}>
-          {/* prev arrow */}
           <button
             style={styles.reviewArrow}
             onClick={() => setReviewIndex(prev => (prev - 1 + HAPPY_CUSTOMERS.length) % HAPPY_CUSTOMERS.length)}
           >‹</button>
-
-          {/* review card */}
           <div style={styles.reviewCard}>
             <p style={styles.reviewStars}>{renderStars(HAPPY_CUSTOMERS[reviewIndex].rating)}</p>
             <p style={styles.reviewComment}>"{HAPPY_CUSTOMERS[reviewIndex].comment}"</p>
             <p style={styles.reviewName}>— {HAPPY_CUSTOMERS[reviewIndex].name}</p>
           </div>
-
-          {/* next arrow */}
           <button
             style={styles.reviewArrow}
             onClick={() => setReviewIndex(prev => (prev + 1) % HAPPY_CUSTOMERS.length)}
           >›</button>
         </div>
-
-        {/* dots */}
         <div style={styles.reviewDots}>
           {HAPPY_CUSTOMERS.map((_, i) => (
             <button
@@ -509,12 +514,8 @@ const Home = () => {
         .product-card:hover img {
           transform: scale(1.04);
         }
-
-        /* ── DESKTOP: show full hero, hide mobile bar */
         .hero-desktop { display: flex; }
         .hero-mobile  { display: none; }
-
-        /* ── MOBILE: hide full hero, show slim bar */
         @media (max-width: 768px) {
           .hero-desktop { display: none !important; }
           .hero-mobile  { display: flex !important; }
@@ -527,7 +528,6 @@ const Home = () => {
 };
 
 const styles = {
-  /* ── HERO ── */
   hero: {
     position: 'relative',
     display: 'flex',
@@ -535,7 +535,6 @@ const styles = {
     justifyContent: 'center',
     overflow: 'hidden',
     textAlign: 'center',
-    // desktop: full screen | mobile: auto height (slim bar)
     minHeight: 'var(--hero-height, 100vh)',
   },
   heroBg: {
@@ -553,7 +552,6 @@ const styles = {
     background: 'rgba(42, 8, 14, 0.62)',
     zIndex: 1,
   },
-  /* Desktop hero content */
   heroContent: {
     position: 'relative',
     zIndex: 2,
@@ -614,7 +612,6 @@ const styles = {
     marginTop: '8px',
     animation: 'heroReveal 1s ease 1.2s both',
   },
-  /* ── Mobile hero slim horizontal bar */
   heroMobile: {
     position: 'relative',
     zIndex: 2,
@@ -670,15 +667,12 @@ const styles = {
     textTransform: 'uppercase',
     flexShrink: 0,
   },
-
-  /* ── COLLECTION ── */
   collectionSection: {
     padding: '60px 16px',
     maxWidth: '1300px',
     margin: '0 auto',
     textAlign: 'center',
   },
-  /* ── Tabs */
   tabsRow: {
     display: 'flex',
     justifyContent: 'center',
@@ -794,7 +788,6 @@ const styles = {
     objectFit: 'cover',
     transition: 'transform 0.5s ease',
   },
-  /* ── tag badge top-left */
   tagBadge: {
     position: 'absolute',
     top: '10px',
@@ -807,7 +800,6 @@ const styles = {
     letterSpacing: '1px',
     zIndex: 2,
   },
-  /* ── wishlist heart top-right */
   wishlistBtn: {
     position: 'absolute',
     top: '10px',
@@ -907,8 +899,6 @@ const styles = {
     textTransform: 'uppercase',
     transition: 'all 0.3s',
   },
-
-  /* ── HAPPY CUSTOMERS ── */
   reviewSection: {
     background: '#6B1B2A',
     padding: '60px 20px',
@@ -983,8 +973,6 @@ const styles = {
     transition: 'background 0.3s',
     padding: 0,
   },
-
-  /* ── ABOUT ── */
   aboutSection: {
     background: '#2C2C2C',
     padding: '60px 20px',
@@ -1004,8 +992,6 @@ const styles = {
     lineHeight: 1.8,
     fontStyle: 'italic',
   },
-
-  /* ── CONTACT ── */
   contactSection: {
     padding: '60px 20px',
     textAlign: 'center',
@@ -1063,8 +1049,6 @@ const styles = {
     letterSpacing: '0.5px',
     lineHeight: 1.4,
   },
-
-  /* ── FOOTER ── */
   footer: {
     background: '#2C2C2C',
     padding: '40px',
