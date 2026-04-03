@@ -1,15 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import API from '../utils/api';
 
-// CHANGE 6 — Accept heroScrolled prop
 const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
+  // On home page → show logo only when scrolled
+  // On other pages → always show logo
+  const showLogo = isHomePage ? heroScrolled : true;
+
+  const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -58,12 +63,10 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
 
   return (
     <>
-      {/* CHANGE 4 — Restructured nav: hamburger left, logo center, icons right */}
       <nav style={styles.nav}>
 
         {/* LEFT — hamburger on mobile, desktop links on desktop */}
         <div style={styles.leftSection}>
-          {/* Hamburger — mobile only */}
           <button style={styles.hamburger} className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? (
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2">
@@ -78,7 +81,6 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
               </svg>
             )}
           </button>
-          {/* Desktop Links */}
           <div style={styles.links} className="nav-desktop-links">
             <Link to="/" style={styles.link}>Home</Link>
             <span style={styles.link} onClick={() => scrollTo('about')}>About</span>
@@ -95,23 +97,23 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
           </div>
         </div>
 
-        {/* CENTER — Logo (hidden on home until scroll, always visible on other pages) */}
+        {/* CENTER — Logo */}
         <Link to="/" style={styles.logo}>
           <img
             src="/logo.svg"
             alt="The Varneeka Woman"
             style={{
               ...styles.logoImg,
-              opacity: heroScrolled ? 1 : 0,
-              transform: heroScrolled ? 'translateY(0)' : 'translateY(-10px)',
+              opacity: showLogo ? 1 : 0,
+              transform: showLogo ? 'translateY(0)' : 'translateY(-10px)',
               transition: 'opacity 0.4s ease, transform 0.4s ease',
-              pointerEvents: heroScrolled ? 'auto' : 'none',
+              pointerEvents: showLogo ? 'auto' : 'none',
             }}
           />
           <div style={{
             ...styles.logoText,
-            opacity: heroScrolled ? 1 : 0,
-            transform: heroScrolled ? 'translateY(0)' : 'translateY(-10px)',
+            opacity: showLogo ? 1 : 0,
+            transform: showLogo ? 'translateY(0)' : 'translateY(-10px)',
             transition: 'opacity 0.4s ease, transform 0.4s ease',
           }}>
             <span style={styles.logoName}>THE VARNEEKA WOMAN</span>
@@ -231,7 +233,6 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
         </div>
       )}
 
-      {/* CHANGE 6 — Updated media query classNames */}
       <style>{`
         @media (max-width: 768px) {
           .nav-desktop-links { display: none !important; }
@@ -246,7 +247,6 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
 };
 
 const styles = {
-  // CHANGE 1 — Grid layout: hamburger left, logo center, icons right
   nav: {
     display: 'grid',
     gridTemplateColumns: '1fr auto 1fr',
@@ -258,7 +258,6 @@ const styles = {
     top: 0,
     zIndex: 1000,
   },
-  // CHANGE 2 — Logo centered
   logo: {
     textDecoration: 'none',
     display: 'flex',
@@ -292,7 +291,6 @@ const styles = {
     fontStyle: 'italic',
     letterSpacing: '1px',
   },
-  // CHANGE 5 — leftSection style
   leftSection: {
     display: 'flex',
     alignItems: 'center',
@@ -314,7 +312,6 @@ const styles = {
     cursor: 'pointer',
     whiteSpace: 'nowrap',
   },
-  // CHANGE 3 — Icons right aligned
   icons: {
     display: 'flex',
     alignItems: 'center',

@@ -438,8 +438,14 @@ const styles = {
   heroBtn: { background: 'transparent', border: '1px solid #C9A84C', color: '#C9A84C', padding: '14px 44px', fontFamily: 'Cinzel, serif', fontSize: '18px', letterSpacing: '3px', cursor: 'pointer', textTransform: 'uppercase', transition: 'all 0.3s', marginTop: '8px', animation: 'heroReveal 1s ease 1.2s both' },
   // CHANGE 8 — updated mobile hero
   heroMobile: { position: 'relative', zIndex: 2, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '40px 20px', width: '100%', minHeight: '45vh', textAlign: 'center' },
-  heroMobileLogo: { width: '100px', height: '100px', objectFit: 'contain', flexShrink: 0, filter: 'brightness(0) invert(1) sepia(1) saturate(4) hue-rotate(5deg)' },
-  heroMobileText: { flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' },
+heroMobileLogo: {
+    width: '100px',
+    height: '100px',
+    objectFit: 'contain',
+    filter: 'brightness(0) invert(1) sepia(1) saturate(4) hue-rotate(5deg)',
+    animation: 'logoPulse 4s ease-in-out infinite',
+  },
+    heroMobileText: { flex: 1, display: 'flex', flexDirection: 'column', gap: '2px' },
   heroMobileTitle: { fontFamily: 'Cinzel, serif', fontSize: '13px', color: '#C9A84C', letterSpacing: '2px', margin: 0 },
   heroMobileTagline: { fontFamily: 'Cormorant Garamond, serif', fontSize: '11px', color: '#FDF6EC', fontStyle: 'italic', margin: 0, opacity: 0.85 },
   heroMobileBy: { fontFamily: 'Cormorant Garamond, serif', fontSize: '10px', color: '#C9A84C', margin: 0, opacity: 0.75 },
