@@ -129,9 +129,9 @@ const Home = () => {
         }} className="hero-mobile">
           <img src="/logo.svg" alt="logo" style={styles.heroMobileLogo} />
           <div style={styles.heroMobileText}>
-            <p style={styles.heroMobileTitle}>THE VARNEEKA WOMAN</p>
+            <p style={styles.heroMobileTitle}><b>THE VARNEEKA WOMAN</b></p>
+            <p style={styles.heroMobileBy}>𝒷𝓎 𝓒𝓪𝓹𝓽 𝓐𝓭𝓲𝓽𝓲 𝓢𝓪𝓶𝓪𝓷𝓽</p>
             <p style={styles.heroMobileTagline}>Thoughtfully Curated Handloom Sarees</p>
-            <p style={styles.heroMobileBy}>by Capt Aditi Samant</p>
           </div>
           <button
             style={styles.heroMobileBtn}
@@ -386,7 +386,7 @@ const Home = () => {
       <footer style={styles.footer}>
         <img src="/logo.svg" alt="" style={styles.footerLogo} />
         <p style={styles.footerBrand}>THE VARNEEKA WOMAN</p>
-        <p style={styles.footerTagline}>by Capt Aditi Samant</p>
+        <p style={styles.footerTagline}>𝒷𝓎 𝓒𝓪𝓹𝓽 𝓐𝓭𝓲𝓽𝓲 𝓢𝓪𝓶𝓪𝓷𝓽</p>
         <div style={styles.footerLinks}>
           <a href="/" style={styles.footerLink}>Home</a>
           <a href="#about" style={styles.footerLink}>About</a>
