@@ -395,21 +395,6 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
           </>
         )}
 
-        {user && (
-          <>
-            <span className="vw-divider">✦</span>
-            <button className="vw-logout" style={{ ...styles.logoutBtn, fontSize: '9px', padding: '4px 9px' }} onClick={handleLogout}>Logout</button>
-          </>
-        )}
-
-        {!user && (
-          <>
-            <span className="vw-divider">✦</span>
-            <Link to="/login" className="vw-link" style={{ color: '#C9A84C' }}>Login</Link>
-            <span className="vw-divider">✦</span>
-            <Link to="/register" style={{ ...styles.registerBtn, fontSize: '8px', padding: '4px 8px' }}>Register</Link>
-          </>
-        )}
       </div>
 
       {/* ════════ MOBILE FULL MENU DRAWER ════════ */}
