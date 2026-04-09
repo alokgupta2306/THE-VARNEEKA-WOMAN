@@ -395,21 +395,7 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
           </>
         )}
 
-        {user && (
-          <>
-            <span className="vw-divider">✦</span>
-            <button className="vw-logout" style={{ ...styles.logoutBtn, fontSize: '9px', padding: '4px 9px' }} onClick={handleLogout}>Logout</button>
-          </>
-        )}
-
-        {!user && (
-          <>
-            <span className="vw-divider">✦</span>
-            <Link to="/login" className="vw-link" style={{ color: '#C9A84C' }}>Login</Link>
-            <span className="vw-divider">✦</span>
-            <Link to="/register" style={{ ...styles.registerBtn, fontSize: '8px', padding: '4px 8px' }}>Register</Link>
-          </>
-        )}
+       
       </div>
 
       {/* ════════ MOBILE FULL MENU DRAWER ════════ */}
@@ -499,8 +485,12 @@ const styles = {
     display: 'flex', alignItems: 'center', gap: '16px',
     position: 'relative', zIndex: 2,
   },
-  links: { display: 'flex', gap: '16px', alignItems: 'center' },
-  icons: {
+links: {
+    display: 'none',
+    gap: '24px',
+    alignItems: 'center',
+  },
+    icons: {
     display: 'flex', alignItems: 'center', gap: '12px',
     flexShrink: 0, position: 'relative', zIndex: 2, justifyContent: 'flex-end',
   },
@@ -525,8 +515,14 @@ const styles = {
     textTransform: 'uppercase', padding: '6px 12px', whiteSpace: 'nowrap',
   },
   hamburger: {
-    background: 'transparent', border: 'none', cursor: 'pointer',
-    display: 'flex', alignItems: 'center', padding: '4px',
+    background: 'transparent',
+    border: 'none',
+    color: '#C9A84C',
+    fontSize: '22px',
+    cursor: 'pointer',
+    display: 'none',
+    alignItems: 'center',
+    padding: '4px',
   },
   searchIconBtn: {
     background: 'transparent', border: 'none', cursor: 'pointer',
