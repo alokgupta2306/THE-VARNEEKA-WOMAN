@@ -282,6 +282,7 @@ const Navbar = ({ cartCount = 0, heroScrolled = false }) => {
               transform: showLogo ? 'translateY(0)' : 'translateY(-10px)',
               transition: 'opacity 0.4s ease, transform 0.4s ease',
               pointerEvents: showLogo ? 'auto' : 'none',
+              alignContent: left,
             }}
           />
           <div style={{
